@@ -885,6 +885,48 @@ textarea.field-input { resize: vertical; min-height: 130px; }
   color: var(--accent-from);
 }
 
+/* ===== Google Drive folder cards ===== */
+.drive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.drive-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.drive-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--glass-border-h);
+  text-decoration: none;
+}
+.drive-card__icon {
+  flex-shrink: 0;
+  width: 40px; height: 40px;
+}
+.drive-card__body { min-width: 0; }
+.drive-card__title {
+  font-size: .95rem; font-weight: 700;
+  color: var(--accent-from);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.drive-card__label {
+  font-size: .78rem; font-weight: 500;
+  color: var(--text-muted, #888);
+  margin-top: 2px;
+}
+
 /* ===== Link pills ===== */
 .link-grid {
   display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px;
@@ -919,3 +961,5 @@ textarea.field-input { resize: vertical; min-height: 130px; }
   cursor: pointer; line-height: 1;
 }
 .lightbox__close:hover { background: rgba(255,255,255,.30); }
+
+.site-footer .nav-links { display: grid; gap: 4px; align-items: center; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
