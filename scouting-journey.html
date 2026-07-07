@@ -4,16 +4,94 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Michaël Etiennette — Scouting Journey</title>
-  <meta name="description" content="A chronological Scouting journey from Cub Scout to Africa Region Youth Representative, with lessons, responsibilities and achievements.">
+  <meta name="description" content="A chronological Scouting journey from Cub Scout to Africa Region Youth Representative, told as an ascent — every milestone a peak.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+
+  <style>
+  /* ==========================================================
+     JOURNEY MOUNTAIN RANGE — self-contained (safe to keep inline)
+     Milestones as peaks; click a peak to expand its story.
+     ========================================================== */
+  .jm-stage { margin-top: 40px; }
+  .jm-scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 20px; }
+  .jm-scroller::-webkit-scrollbar { height: 8px; }
+  .jm-scroller::-webkit-scrollbar-thumb { background: var(--glass-border-h); border-radius: 999px; }
+
+  .jm-svg {
+    display: block; width: 100%; min-width: 820px; height: auto;
+    border-radius: 20px;
+    background:
+      radial-gradient(700px 300px at 80% 0%, rgba(45,212,191,0.10), transparent 65%),
+      radial-gradient(700px 320px at 12% 8%, rgba(192,132,252,0.14), transparent 60%),
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .jm-hint { text-align: center; color: var(--muted); font-size: .85rem; margin: 12px 0 0; }
+
+  /* peaks (SVG groups) */
+  .jm-peak { cursor: pointer; }
+  .jm-peak .jm-hit { fill: transparent; }
+  .jm-peak .jm-dot { transition: r .2s ease; }
+  .jm-peak .jm-flag,
+  .jm-peak .jm-pole { transition: transform .2s ease, opacity .2s ease; transform-box: fill-box; transform-origin: bottom center; }
+  .jm-peak .jm-year {
+    font-family: var(--font-body); font-size: 15px; font-weight: 800;
+    fill: var(--lead-text); text-anchor: middle;
+    transition: fill .2s ease;
+  }
+  .jm-peak .jm-name {
+    font-family: var(--font-body); font-size: 11.5px; font-weight: 600;
+    fill: var(--muted); text-anchor: middle; letter-spacing: .04em;
+  }
+  .jm-peak:hover .jm-flag, .jm-peak:focus-visible .jm-flag { transform: scale(1.18); }
+  .jm-peak:hover .jm-year, .jm-peak:focus-visible .jm-year { fill: #fff; }
+  .jm-peak.active .jm-year { fill: #fff; }
+  .jm-peak.active .jm-dot { r: 8; }
+  .jm-peak .jm-ring { opacity: 0; }
+  .jm-peak.active .jm-ring { opacity: 1; animation: jmPulse 1.8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes jmPulse {
+    0%   { transform: scale(.55); opacity: .75; }
+    100% { transform: scale(1.5);  opacity: 0; }
+  }
+
+  /* trail */
+  .jm-trail {
+    fill: none; stroke: var(--accent-to); stroke-width: 2.5;
+    stroke-dasharray: 2 9; stroke-linecap: round; opacity: .55;
+  }
+
+  /* detail cards: enhanced mode collapses all but the open one */
+  .jm-details { margin-top: 34px; }
+  .jm-enhanced .journey-card { display: none; }
+  .jm-enhanced .journey-card.open { display: block; animation: jmRise .35s ease; }
+  @keyframes jmRise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+  /* prev / next footer inside open card */
+  .jm-navrow { display: flex; justify-content: space-between; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  .jm-navbtn {
+    font-family: var(--font-body); font-weight: 700; font-size: .85rem;
+    padding: 10px 18px; border-radius: 9999px; cursor: pointer;
+    background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--lead-text);
+    transition: border-color .15s ease, color .15s ease, transform .15s ease;
+  }
+  .jm-navbtn:hover { border-color: var(--accent-from); color: #fff; transform: translateY(-2px); }
+  .jm-navbtn[disabled] { opacity: .35; cursor: default; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .jm-peak.active .jm-ring { animation: none; opacity: .5; }
+    .jm-enhanced .journey-card.open { animation: none; }
+  }
+  </style>
 </head>
 <body>
-
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header" id="site-header"></header>
-
+  <main id="main-content">
 
   <section class="banner" style="background-image: url('photos/evidence/ScoutGroup.jpeg');">
     <div class="wrap">
@@ -30,11 +108,70 @@
     <h2>From an eight-year-old Cub to regional youth leadership</h2>
     <p class="lead">
       What started as a childhood adventure slowly became one of the biggest foundations of who I am today.
+      Every milestone was a peak to climb — pick one on the range below.
     </p>
 
+    <!-- ===== Mountain range navigator ===== -->
+    <div class="jm-stage reveal">
+      <div class="jm-scroller">
+        <svg class="jm-svg" viewBox="0 0 1200 440" xmlns="http://www.w3.org/2000/svg"
+             role="group" aria-label="Journey milestones drawn as mountain peaks. Select a peak to read its story.">
+          <defs>
+            <linearGradient id="jmBack" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#4c1d95" stop-opacity=".45"/>
+              <stop offset="1" stop-color="#0c0520" stop-opacity=".1"/>
+            </linearGradient>
+            <linearGradient id="jmMid" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#7c3aed" stop-opacity=".5"/>
+              <stop offset="1" stop-color="#2d0a52" stop-opacity=".25"/>
+            </linearGradient>
+            <linearGradient id="jmFront" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#3b1a6e"/>
+              <stop offset=".65" stop-color="#4c1d95"/>
+              <stop offset="1" stop-color="#134e4a"/>
+            </linearGradient>
+          </defs>
+
+          <!-- stars -->
+          <g fill="#ffffff" opacity=".5">
+            <circle cx="90"  cy="52"  r="1.6"/><circle cx="240" cy="90"  r="1.2"/>
+            <circle cx="410" cy="40"  r="1.5"/><circle cx="560" cy="105" r="1.1"/>
+            <circle cx="705" cy="55"  r="1.4"/><circle cx="835" cy="30"  r="1.2"/>
+            <circle cx="965" cy="70"  r="1.5"/><circle cx="1130" cy="42" r="1.3"/>
+            <circle cx="330" cy="140" r="1"/><circle cx="1020" cy="120" r="1"/>
+          </g>
+
+          <!-- ridges: back, mid, front -->
+          <path fill="url(#jmBack)" d="M0,440 L0,300 L140,220 L300,320 L470,190 L640,290 L810,160 L980,270 L1120,140 L1200,220 L1200,440 Z"/>
+          <path fill="url(#jmMid)"  d="M0,440 L0,340 L180,260 L340,350 L520,250 L690,330 L880,210 L1050,300 L1200,180 L1200,440 Z"/>
+          <path id="jmFrontRidge" fill="url(#jmFront)"
+                d="M0,440 L0,362 L110,308 L210,364 L310,266 L407,334 L505,228 L602,302 L700,188 L797,264 L895,146 L992,226 L1090,90 L1200,244 L1200,440 Z"/>
+
+          <!-- snow caps -->
+          <g fill="#ffffff" opacity=".38">
+            <path d="M110,308 L92,322 L100,320 L106,326 L118,318 L128,322 Z"/>
+            <path d="M310,266 L292,280 L300,278 L306,284 L318,276 L328,280 Z"/>
+            <path d="M505,228 L487,242 L495,240 L501,246 L513,238 L523,242 Z"/>
+            <path d="M700,188 L682,202 L690,200 L696,206 L708,198 L718,202 Z"/>
+            <path d="M895,146 L877,160 L885,158 L891,164 L903,156 L913,160 Z"/>
+            <path d="M1090,90 L1068,108 L1078,105 L1085,112 L1098,103 L1110,108 Z"/>
+          </g>
+
+          <!-- climbing trail -->
+          <path class="jm-trail" d="M110,308 L310,266 L505,228 L700,188 L895,146 L1090,90"/>
+
+          <!-- peaks (generated flags/labels wired by JS below; markup kept explicit for no-JS clarity) -->
+          <g id="jmPeaks"></g>
+        </svg>
+      </div>
+      <p class="jm-hint">⛰️ Tap a peak to open that chapter — the climb runs from 2012 at the foothills to today at the summit.</p>
+    </div>
+
+    <!-- ===== Milestone stories (unchanged content) ===== -->
+    <div class="jm-details" id="journeyDetails">
     <div class="journey-timeline">
 
-      <article class="journey-card journey-card--cubs">
+      <article class="journey-card journey-card--cubs" id="stage-0">
         <div class="journey-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="12" cy="16" rx="4.5" ry="3.5"/>
@@ -56,7 +193,7 @@
         </p>
       </article>
 
-      <article class="journey-card journey-card--scout">
+      <article class="journey-card journey-card--scout" id="stage-1">
         <div class="journey-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
             <line x1="5" y1="19" x2="19" y2="5"/>
@@ -75,7 +212,7 @@
         </p>
       </article>
 
-      <article class="journey-card journey-card--venture">
+      <article class="journey-card journey-card--venture" id="stage-2">
         <div class="journey-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
             <polygon points="1,6 1,22 8,18 16,22 23,18 23,2 16,6 8,2"/>
@@ -93,19 +230,19 @@
         </p>
       </article>
 
-      <article class="journey-card journey-card--blue">
+      <article class="journey-card journey-card--blue" id="stage-3">
         <span class="journey-year">2023</span>
         <h3>Adult Leader</h3>
         <p>
           In 2023, my role changed completely. I was no longer only participating in activities — I became responsible for helping create meaningful experiences for younger Scouts.
         </p>
         <p>
-          Supporting the troop, mentoring young leaders, helping rebuild the Patrol Leaders’ Council and guiding Scouts through their own progression gave me a deeper appreciation of what adult leadership really means.
+          Supporting the troop, mentoring young leaders, helping rebuild the Patrol Leaders&rsquo; Council and guiding Scouts through their own progression gave me a deeper appreciation of what adult leadership really means.
           Watching young people grow in confidence has become one of the most rewarding parts of my journey.
         </p>
       </article>
 
-      <article class="journey-card journey-card--blue">
+      <article class="journey-card journey-card--blue" id="stage-4">
         <span class="journey-year">2024–2026</span>
         <h3>District Youth Scout Council President</h3>
         <p>
@@ -118,7 +255,7 @@
         </p>
       </article>
 
-      <article class="journey-card journey-card--highlight">
+      <article class="journey-card journey-card--highlight" id="stage-5">
         <span class="journey-year">2025–2028</span>
         <h3>Africa Region Youth Representative</h3>
         <p>
@@ -132,9 +269,12 @@
       </article>
 
     </div>
+    </div>
+
   </div>
 </section>
 
+  </main>
   <footer class="site-footer" id="site-footer"></footer>
   <div class="lightbox" id="lightbox" hidden>
     <button class="lightbox__close" id="lightboxClose" aria-label="Close">✕</button>
@@ -144,6 +284,110 @@
 
   <script src="js/layout.js"></script>
   <script src="js/main.js"></script>
+
+  <script>
+  /* ==========================================================
+     JOURNEY MOUNTAIN — peaks, flags and story switching.
+     Self-contained; progressive enhancement (no-JS = all cards
+     visible in order, nothing breaks).
+     ========================================================== */
+  (function journeyMountain() {
+    "use strict";
+    var SVGNS = "http://www.w3.org/2000/svg";
+    var peaksLayer = document.getElementById("jmPeaks");
+    var details = document.getElementById("journeyDetails");
+    if (!peaksLayer || !details) return;
+
+    /* peak geometry matches the front ridge apexes; colours match card stages */
+    var STAGES = [
+      { x: 110,  y: 308, year: "2012",      name: "Cub Scout",        color: "#eab308" },
+      { x: 310,  y: 266, year: "2015",      name: "Scout Troop",      color: "#22c55e" },
+      { x: 505,  y: 228, year: "2019",      name: "Venture Scout",    color: "#e11d48" },
+      { x: 700,  y: 188, year: "2023",      name: "Adult Leader",     color: "#3b82f6" },
+      { x: 895,  y: 146, year: "2024–26",   name: "DYSC President",   color: "#60a5fa" },
+      { x: 1090, y: 90,  year: "2025–28",   name: "Africa Region YR", color: "#2dd4bf" }
+    ];
+
+    var cards = Array.prototype.slice.call(details.querySelectorAll(".journey-card"));
+    var peaks = [];
+    var current = -1;
+
+    function el(tag, attrs) {
+      var node = document.createElementNS(SVGNS, tag);
+      for (var k in attrs) node.setAttribute(k, attrs[k]);
+      return node;
+    }
+
+    /* build each peak marker: pulse ring, dot, flag pole + pennant, labels, hit area */
+    STAGES.forEach(function (s, i) {
+      var g = el("g", { "class": "jm-peak", "tabindex": "0", "role": "button",
+                        "aria-label": s.year + " — " + s.name + ". Open this chapter." });
+
+      g.appendChild(el("circle", { "class": "jm-ring", cx: s.x, cy: s.y, r: 16,
+                                   fill: "none", stroke: s.color, "stroke-width": 2.5 }));
+      g.appendChild(el("line",   { "class": "jm-pole", x1: s.x, y1: s.y, x2: s.x, y2: s.y - 34,
+                                   stroke: "#ffffff", "stroke-width": 2.5, "stroke-linecap": "round", opacity: ".9" }));
+      g.appendChild(el("path",   { "class": "jm-flag",
+                                   d: "M" + s.x + "," + (s.y - 34) + " l26,7 l-26,7 Z", fill: s.color }));
+      g.appendChild(el("circle", { "class": "jm-dot", cx: s.x, cy: s.y, r: 5.5,
+                                   fill: s.color, stroke: "#0c0520", "stroke-width": 2 }));
+
+      var yr = el("text", { "class": "jm-year", x: s.x, y: s.y - 48 }); yr.textContent = s.year;
+      var nm = el("text", { "class": "jm-name", x: s.x, y: s.y + 26 }); nm.textContent = s.name;
+      /* keep the summit's name label inside the canvas */
+      if (i === STAGES.length - 1) nm.setAttribute("x", s.x - 14);
+      g.appendChild(yr); g.appendChild(nm);
+
+      g.appendChild(el("circle", { "class": "jm-hit", cx: s.x, cy: s.y - 20, r: 46 }));
+
+      g.addEventListener("click", function () { select(i, true); });
+      g.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(i, true); }
+        if (e.key === "ArrowRight") { e.preventDefault(); focusPeak(i + 1); }
+        if (e.key === "ArrowLeft")  { e.preventDefault(); focusPeak(i - 1); }
+      });
+
+      peaksLayer.appendChild(g);
+      peaks.push(g);
+    });
+
+    function focusPeak(i) {
+      if (i < 0 || i >= peaks.length) return;
+      peaks[i].focus();
+    }
+
+    /* prev/next buttons appended to every card */
+    cards.forEach(function (card, i) {
+      var row = document.createElement("div");
+      row.className = "jm-navrow";
+      var prev = document.createElement("button");
+      prev.className = "jm-navbtn"; prev.type = "button";
+      prev.textContent = "← " + (i > 0 ? STAGES[i - 1].name : "Base camp");
+      if (i === 0) prev.disabled = true;
+      prev.addEventListener("click", function () { if (i > 0) select(i - 1, true); });
+      var next = document.createElement("button");
+      next.className = "jm-navbtn"; next.type = "button";
+      next.textContent = (i < cards.length - 1 ? STAGES[i + 1].name : "Summit reached") + " →";
+      if (i === cards.length - 1) next.disabled = true;
+      next.addEventListener("click", function () { if (i < cards.length - 1) select(i + 1, true); });
+      row.appendChild(prev); row.appendChild(next);
+      card.appendChild(row);
+    });
+
+    function select(i, scroll) {
+      if (i === current) return;
+      current = i;
+      peaks.forEach(function (p, j) { p.classList.toggle("active", j === i); });
+      cards.forEach(function (c, j) { c.classList.toggle("open", j === i); });
+      if (scroll) details.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    /* enhance: collapse cards, open the first chapter */
+    details.classList.add("jm-enhanced");
+    select(0, false);
+  })();
+  </script>
+
   <script>
   (function initLightbox() {
     const box = document.getElementById("lightbox");

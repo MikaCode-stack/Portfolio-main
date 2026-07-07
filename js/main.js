@@ -25,6 +25,7 @@
     var href = a.getAttribute('href');
     if (href === here || (here === 'index.html' && href === 'index.html')) {
       a.classList.add('active');
+      a.setAttribute('aria-current', 'page');
     }
   });
 

@@ -55,6 +55,27 @@
 /* ---- Reset ---- */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+
+/* ---- Skip link (screen readers / keyboard) ---- */
+.skip-link {
+  position: absolute; top: -999px; left: 8px;
+  padding: 10px 18px; border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--btn-from); color: #fff;
+  font-weight: 700; font-size: .9rem; z-index: 9999;
+  text-decoration: none;
+}
+.skip-link:focus { top: 0; }
+
+/* ---- Global focus-visible ring ---- */
+:focus-visible {
+  outline: 3px solid var(--accent-to);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+/* Override for elements that have their own outline logic */
+.field-input:focus-visible { outline: none; }
+button:focus-visible,
+a:focus-visible { border-radius: 6px; }
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -113,7 +134,7 @@ a:hover { text-decoration: underline; }
 h1, h2, h3, h4 { font-family: var(--font-head); font-weight: 400; line-height: 1.05; margin: 0 0 .4em; letter-spacing: .5px; color: #fff; }
 h1 { font-size: clamp(2.8rem, 6vw, 4.6rem); }
 h2 { font-size: clamp(2.1rem, 4vw, 3rem); }
-h3 { font-size: 1.7rem; }
+h3 { font-size: clamp(1.3rem, 3vw, 1.7rem); }
 h4 { font-size: 1.3rem; }
 p  { margin: 0 0 1rem; color: var(--lead-text); }
 
@@ -200,10 +221,15 @@ p  { margin: 0 0 1rem; color: var(--lead-text); }
    ========================================================================== */
 .site-header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(45,10,82,0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(45,10,82,0.95);
   border-bottom: 1px solid rgba(192,132,252,0.18);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .site-header {
+    background: rgba(45,10,82,0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
 }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 68px; }
 .brand {
@@ -247,7 +273,7 @@ p  { margin: 0 0 1rem; color: var(--lead-text); }
   }
   .nav-links.open { max-height: 80vh; overflow-y: auto; padding: 8px 0; }
   .nav-links li { width: 100%; }
-  .nav-links a { display: block; padding: 12px 24px; border-radius: 0; }
+  .nav-links a { display: block; padding: 14px 24px; border-radius: 0; min-height: 48px; }
 }
 
 /* ==========================================================================
@@ -286,7 +312,7 @@ p  { margin: 0 0 1rem; color: var(--lead-text); }
   background-position: center;
   background-repeat: no-repeat;
   border-bottom: 1px solid var(--glass-border);
-  color: #fff; padding: 60px 0;
+  color: #fff; padding: 60px 0; min-height: 220px;
   overflow: hidden;
 }
 .banner::before {
@@ -550,7 +576,8 @@ textarea.field-input { resize: vertical; min-height: 130px; }
   -webkit-backdrop-filter: blur(8px);
   font-weight: 600; box-shadow: var(--shadow-sm); color: #fff;
 }
-.social-link:hover { text-decoration: none; border-color: var(--accent-from); transform: translateX(4px); transition: all .15s ease; }
+.social-link { transition: transform .15s ease, border-color .15s ease; }
+.social-link:hover { text-decoration: none; border-color: var(--accent-from); transform: translateX(4px); }
 .form-note { font-size: .82rem; color: var(--muted); margin-top: 6px; }
 
 /* ==========================================================================
@@ -895,6 +922,13 @@ textarea.field-input { resize: vertical; min-height: 130px; }
   color: var(--accent-from);
 }
 
+/* Inline evidence thumbnail used inside a dynamic Wood Badge section */
+.wb-inline-evidence {
+  max-width: 220px;
+  margin-top: 14px;
+}
+.wb-inline-evidence img { height: 130px; }
+
 /* ===== Google Drive folder cards ===== */
 .drive-grid {
   display: grid;
@@ -1034,15 +1068,15 @@ textarea.field-input { resize: vertical; min-height: 130px; }
   padding: 6px 14px;
   border-radius: 999px;
   background: rgba(120, 80, 200, 0.1);
-  color: var(--purple);
+  color: var(--purple-soft);
   font-weight: 800;
   font-size: 0.85rem;
 }
 
 .journey-card h3 {
   margin-bottom: 12px;
-  color: var(--purple);
-  font-size: 1.5rem;
+  color: var(--purple-soft);
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
 }
 
 .journey-card p {

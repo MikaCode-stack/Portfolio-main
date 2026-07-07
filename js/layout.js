@@ -9,6 +9,7 @@
         '<li><a href="index.html">Home</a></li>' +
         '<li><a href="scouting-journey.html">Journey</a></li>' +
         '<li><a href="wood-badge.html">Wood Badge</a></li>' +
+        '<li><a href="mauritius-scout-association.html">Association</a></li>' +
         '<li><a href="contact.html">Contact</a></li>' +
       '</ul>' +
     '</div>';
@@ -27,6 +28,7 @@
           '<li><a href="index.html">Home</a></li>' +
           '<li><a href="scouting-journey.html">Journey</a></li>' +
           '<li><a href="wood-badge.html">Wood Badge</a></li>' +
+          '<li><a href="mauritius-scout-association.html">Association</a></li>' +
           '<li><a href="contact.html">Contact</a></li>' +
         '</ul>' +
       '</div>' +

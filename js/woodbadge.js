@@ -51,6 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ============================================================
+   CONFIG
+============================================================ */
+// Relative path — works locally (127.0.0.1) and on GitHub Pages.
+// Must end with a trailing slash.
+const EVIDENCE_PATH = "photos/evidence/";
+
+const DEBUG_PHOTOS = true; // set false to silence photo logging
+
+/* ============================================================
    CSV PARSING
 ============================================================ */
 function parseCSV(csvText) {
@@ -78,7 +87,6 @@ function parseCSV(csvText) {
         currentRow = [];
         currentValue = "";
       }
-
       if (char === "\r" && nextChar === "\n") {
         i++;
       }
@@ -104,12 +112,23 @@ function formatRows(rows) {
 
   const findCol = (test) => header.findIndex(test);
 
+  // Single photo/docs column: matches "SupportingDocuments", "Supporting Docs",
+  // "Documents", or a "Photos" column.
   const idx = {
     cluster:    findCol(h => h === "cluster"),
     module:     findCol(h => h === "module"),
     subsection: findCol(h => h.startsWith("subsection") || h.includes("element")),
     content:    findCol(h => h.startsWith("content")),
+    docs:       findCol(h =>
+                  h.includes("supporting") ||
+                  h === "documents" ||
+                  h.startsWith("photo")
+                ),
   };
+
+  // Diagnostics — remove once photos work
+  console.log("COLUMN INDEXES:", idx);
+  console.log("HEADERS:", header);
 
   let lastCluster = "";
   let lastModule = "";
@@ -127,10 +146,58 @@ function formatRows(rows) {
       module,
       subsection: idx.subsection > -1 ? (row[idx.subsection] || "").trim() : "",
       content:    idx.content    > -1 ? (row[idx.content]    || "").trim() : "",
+      supportingDocuments: idx.docs > -1 ? (row[idx.docs] || "").trim() : "",
     };
   });
 
-  return out.filter(item => item.cluster && item.module);
+  const filtered = out.filter(item => item.cluster && item.module);
+
+  console.log("FIRST ROW DOCS:", filtered[0]?.supportingDocuments || "(empty)");
+
+  return filtered;
+}
+
+/* ============================================================
+   SUPPORTING DOCUMENTS / PHOTOS
+============================================================ */
+function parseSupportingDocuments(value) {
+  if (!value) return [];
+
+  return value
+    .split(";")
+    .map(name => name.trim())
+    .filter(Boolean)
+    .map(entry => {
+      // allow "Caption|filename.jpg" OR just "filename.jpg"
+      const parts = entry.split("|");
+      const hasCaption = parts.length > 1;
+      const file = (hasCaption ? parts[1] : parts[0]).trim();
+      const caption = hasCaption ? parts[0].trim() : prettify(file);
+
+      // If it's already a full URL, use as-is; otherwise prepend the repo folder.
+      const isAbsolute = /^https?:\/\//i.test(file);
+      const src = isAbsolute ? file : EVIDENCE_PATH + file;
+
+      return { caption, src };
+    });
+}
+
+function prettify(filename) {
+  return filename
+    .replace(/^.*\//, "")          // drop any path
+    .replace(/\.[^.]+$/, "")        // drop extension
+    .replace(/[-_]/g, " ");         // dashes/underscores → spaces
+}
+
+function logPhoto(status, doc, extra = "") {
+  if (!DEBUG_PHOTOS) return;
+  console.log(
+    `%c[PHOTO ${status}]`, "color:#2563eb;font-weight:bold",
+    `\n  caption: ${doc.caption}`,
+    `\n  resolved src: ${doc.src}`,
+    `\n  full URL: ${new URL(doc.src, window.location.href).href}`,
+    extra ? `\n  note: ${extra}` : ""
+  );
 }
 
 /* ============================================================
@@ -146,7 +213,6 @@ function renderWoodBadge(data, container) {
     if (!grouped[clusterKey]) {
       grouped[clusterKey] = { modules: {} };
     }
-
     if (!grouped[clusterKey].modules[moduleTitle]) {
       grouped[clusterKey].modules[moduleTitle] = [];
     }
@@ -154,6 +220,7 @@ function renderWoodBadge(data, container) {
     grouped[clusterKey].modules[moduleTitle].push({
       label: item.subsection,
       content: item.content,
+      documents: parseSupportingDocuments(item.supportingDocuments),
     });
   });
 
@@ -170,7 +237,7 @@ function renderWoodBadge(data, container) {
 
     Object.entries(cluster.modules).forEach(([moduleTitle, sections], moduleIndex) => {
       const details = document.createElement("details");
-      details.className = "detail-block";   // no "reveal" — keeps content visible
+      details.className = "detail-block";
 
       if (moduleIndex === 0) {
         details.open = true;
@@ -202,10 +269,34 @@ function renderWoodBadge(data, container) {
 }
 
 function renderSection(section) {
+  const photos = (section.documents && section.documents.length)
+    ? `
+      <div class="evidence-grid">
+        ${section.documents.map(doc => {
+          logPhoto("TRY", doc);
+          const safeSrc = escapeAttribute(doc.src);
+          const safeCap = escapeHTML(doc.caption);
+          return `
+            <figure class="evidence-card">
+              <a href="${safeSrc}" target="_blank" rel="noopener">
+                <img src="${safeSrc}" alt="${safeCap}" loading="lazy"
+                     onload="window.__photoOK && window.__photoOK(this)"
+                     onerror="window.__photoErr && window.__photoErr(this)"
+                     data-caption="${safeCap}">
+              </a>
+              <figcaption>${safeCap}</figcaption>
+            </figure>
+          `;
+        }).join("")}
+      </div>
+    `
+    : "";
+
   return `
     <div class="field">
       <div class="field-label">${escapeHTML(section.label)}</div>
       <p>${formatContent(section.content)}</p>
+      ${photos}
     </div>
   `;
 }
@@ -244,16 +335,13 @@ function renderTabs(clusterNames) {
 ============================================================ */
 function formatContent(text) {
   if (!text) return "";
-
   return escapeHTML(text)
     .replace(/\n/g, "<br>")
     .replace(/•/g, "<br>•");
 }
 
 function slugify(text) {
-  return text
-    .toString()
-    .toLowerCase()
+  return text.toString().toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^\w-]/g, "");
 }
@@ -267,8 +355,10 @@ function escapeHTML(value) {
     .replaceAll("'", "&#039;");
 }
 
+function escapeAttribute(value) { return escapeHTML(value); }
+
 /* ============================================================
-   LIGHTBOX — works for the hard-coded evidence section
+   LIGHTBOX
 ============================================================ */
 (function initLightbox() {
   const box = document.getElementById("lightbox");
@@ -292,7 +382,6 @@ function escapeHTML(value) {
     document.body.style.overflow = "";
   }
 
-  // Delegated click — catches evidence cards (and doc-card images if present)
   document.addEventListener("click", (e) => {
     const card = e.target.closest(".evidence-card a, .doc-card--img");
     if (!card) return;
@@ -316,3 +405,28 @@ function escapeHTML(value) {
     if (e.key === "Escape" && !box.hidden) close();
   });
 })();
+
+/* ============================================================
+   PHOTO LOAD/ERROR HANDLERS (used by inline onload/onerror)
+============================================================ */
+window.__photoOK = function (img) {
+  if (!DEBUG_PHOTOS) return;
+  console.log(
+    "%c[PHOTO OK]", "color:#16a34a;font-weight:bold",
+    `\n  loaded: ${img.currentSrc || img.src}`,
+    `\n  natural size: ${img.naturalWidth}x${img.naturalHeight}`,
+    `\n  caption: ${img.dataset.caption}`
+  );
+};
+
+window.__photoErr = function (img) {
+  const attempted = new URL(img.getAttribute("src"), window.location.href).href;
+  console.error(
+    "%c[PHOTO FAILED]", "color:#dc2626;font-weight:bold",
+    `\n  caption: ${img.dataset.caption}`,
+    `\n  src attribute: ${img.getAttribute("src")}`,
+    `\n  full URL browser tried: ${attempted}`,
+    `\n  → open that URL in a new tab. 404 = wrong path/filename (check spelling & case).`
+  );
+  img.closest(".evidence-card")?.style.setProperty("display", "none");
+};
