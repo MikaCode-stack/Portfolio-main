@@ -89,7 +89,7 @@
       if (note) {
         note.textContent = 'Thanks, ' + name.trim() + '! This is a display-only form. '
           + 'To send a real message, please email michael@example.com directly.';
-        note.style.color = '#4d006e';
+        note.style.color = '#4D006E';
       }
       form.reset();
     });

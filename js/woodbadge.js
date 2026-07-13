@@ -232,7 +232,7 @@ function renderWoodBadge(data, container) {
     panel.id = slugify(clusterId);
 
     panel.innerHTML = `
-      <h3 style="color:var(--purple);">Cluster ${escapeHTML(clusterId)}</h3>
+      <h3 style="color:var(--accent);">Cluster ${escapeHTML(clusterId)}</h3>
     `;
 
     Object.entries(cluster.modules).forEach(([moduleTitle, sections], moduleIndex) => {
