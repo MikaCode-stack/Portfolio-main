@@ -452,6 +452,15 @@ p  { margin: 0 0 1rem; color: var(--body-text); }
 /* ==========================================================================
    Contact
    ========================================================================== */
+.contact-intro { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+.contact-avatar {
+  width: 240px; height: 240px; border-radius: 50%; object-fit: cover;
+  flex-shrink: 0; box-shadow: var(--shadow-md); border: 3px solid var(--surface);
+}
+@media (max-width: 700px){
+  .contact-intro { flex-direction: column-reverse; text-align: center; gap: 20px; }
+}
+
 .contact-grid { display: grid; gap: 30px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 @media (max-width: 800px){ .contact-grid { grid-template-columns: 1fr; } }
 
@@ -885,7 +894,13 @@ textarea.field-input { resize: vertical; min-height: 130px; }
   transition: transform .15s ease, background .15s ease;
 }
 .link-pill:hover { transform: translateY(-2px); background: var(--accent-hover); text-decoration: none; }
-
+.link-icon {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    vertical-align: middle;
+    margin-right: 4px;
+}
 /* ===== Lightbox ===== */
 .lightbox {
   position: fixed; inset: 0; background: rgba(10,11,16,.92);
